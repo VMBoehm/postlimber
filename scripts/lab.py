@@ -1,18 +1,19 @@
 import numpy as np
-import json
+import os, json
 import tools
 from scipy.interpolate import interp1d
 
-dpath = '../PostBornEma/'
+package_path = os.path.dirname(os.path.abspath(__file__))+'/'
+dpath = package_path + '../PostBornEma/'
 
 ell_, t_, nu_n_, I0_ltrc, I2_ltrc, I4_ltrc = tools.loadfftlogdata()
 t1, w1 = tools.loadggwts()
 assert(np.allclose(t_,t1))
 
 #Setup cosmology dicts
-with open('class_cosmo_b.json', 'r') as fp: cosmo_b = json.load(fp)
+with open(package_path + 'class_cosmo_b.json', 'r') as fp: cosmo_b = json.load(fp)
 for key in cosmo_b: cosmo_b[key] = np.array(cosmo_b[key])
-with open('cosmo_dict.json', 'r') as fp: cosmo_dict = json.load(fp)
+with open(package_path + 'cosmo_dict.json', 'r') as fp: cosmo_dict = json.load(fp)
 for key in cosmo_dict: locals()[key] = cosmo_dict[key]
 
 
