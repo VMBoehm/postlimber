@@ -66,9 +66,13 @@ for index in indexsplit[rank]:
         chi2fac *= (1 + z_chi(chi2))
         #print(chi2fac.shape)
         
-        matrix = w1d*chi2fac*chi1fac*I_ltc
+        
+        Cl = np.zeros_like(ell_)
+        for ii in range(ell_.size):
+            #matrix = w1d*chi2fac*chi1fac*I_ltc
+            Cl[ii] = np.sum(w1d * chi2fac* chi1fac * I_ltc[ii])
+        
         #print(matrix.shape)
-        Cl = np.sum(matrix, axis=(1, 2))
         Cl *= chi1max *1./np.pi**2/2.* prefac**prefindex / 4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
         result[:, ichi2] = Cl
 
