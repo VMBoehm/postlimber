@@ -11,7 +11,7 @@ from mpi4py import MPI
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
-
+size = comm.Get_size()
 
 def lensing_kernel(xi, xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi)
@@ -23,7 +23,14 @@ w1d = w1.reshape(-1, 1)
 Cl = np.zeros((len(ell_),len(t_),len(t_)))
 I0_ltc = np.squeeze(I0_ltrc,axis=2)
 
-for jj, chi1_max in enumerate((t_*chi_cmb)):
+junksize = int(len(t_)/size)
+max_num  = max((rank+1)*junksize,size)
+jjs      = np.arange(rank*junksize, max_num)
+print(junksize,max_num)
+
+Cl = np.zeros((len(ell_),len(jjs),len(t_)))
+
+for chi1_max in ((t_*chi_cmb)[jjs]):
     for ii, chi2_max in enumerate((t_*chi_cmb)):
 
 
@@ -43,11 +50,12 @@ for jj, chi1_max in enumerate((t_*chi_cmb)):
 
       result = np.zeros_like(ell_)
 
-      Cl[:,ii,jj] = np.sum(chifacs*I0_ltc, axis=(1,2)) #not summing over r
+      Cl[:,jj,ii] = np.sum(chifacs*I0_ltc, axis=(1,2)) #not summing over r
 
+result = comm.gather(Cl, root=0)
 
+print(result.shape)
 
-Cl*=(1./np.pi**2/2.*prefac**2)
-print('Time taken = ', time.time()-begin)
-
-np.save('../G_matrices/clphipsi',Cl)
+result*=(1./np.pi**2/2.*prefac**2)
+if rank ==0:
+  np.save('../G_matrices/clphipsi_parallel',Cl)
