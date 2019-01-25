@@ -108,7 +108,7 @@ class PostBorn_Bispec():
     def compute_spec_int(self, nl=True):
 
         try:
-            self.pk_mm  = pickle.load(open('/home/nessa/Documents/Projects/LensingBispectrum/CMB-nonlinear/outputs/power_spectra/Pks_pB_tests.pkl','w'))
+            self.pk_mm  = np.load('../output/Pks_pB_tests')
         except:
             self.cosmo['output'] = 'mPk'
             self.cosmo['P_k_max_1/Mpc'] = self.kmax+1
@@ -122,10 +122,10 @@ class PostBorn_Bispec():
 
             self.closmo=Class()
             self.closmo.set(self.cosmo)
-            print "Initializing CLASS with halofit..."
-            print self.cosmo
+            print("Initializing CLASS with halofit...")
+            print(self.cosmo)
             self.closmo.compute()
-            print 'sigma8 ', self.closmo.sigma8()
+            print('sigma8 ', self.closmo.sigma8())
 
             print('zmax',self.zmax)
             a  = np.linspace((1.+self.zmin)**(-1),(1.+self.zmax)**(-1),200)
@@ -141,7 +141,7 @@ class PostBorn_Bispec():
             #print(max(k_),self.kmax)
             spec_=np.zeros((len(z_),len(k_)))
             cosmo_pk = self.closmo.pk
-            for jj in xrange(len(z_)):
+            for jj in range(len(z_)):
                 spec_[jj] = np.asarray([cosmo_pk(kk,z_[jj]) for kk in k_])
 
             pk_int = RectBivariateSpline(k_,np.log(z_),np.transpose(spec_))
@@ -150,7 +150,7 @@ class PostBorn_Bispec():
             self.pk_mh_1st = pk_int
             self.pk_mh_2nd = pk_int
 
-            pickle.dump(self.pk_mm,open('/home/nessa/Documents/Projects/LensingBispectrum/CMB-nonlinear/outputs/power_spectra/Pks_pB_tests.pkl','w'))
+            np.save('../output/Pks_pB_tests',self.pk_mm)
 
 
     def cl_kappa(self, chimax, chimax2=None):

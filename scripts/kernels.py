@@ -82,17 +82,17 @@ def simple_bias(z):
 
 def dNdz_LSST(bin_num,dn_filename = '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
     if bin_num is "all":
-      zbin, nbin = pickle.load(open(dn_filename+'tot_extrapolated.pkl','r'))
-      norm                = simps(nbin,zbin)
-      mbin                = 'None'
+        zbin, nbin = np.load(dn_filename+'tot_extrapolated.npy',encoding='latin1')
+        norm                = np.trapz(nbin,zbin)
+        mbin                = 'None'
     else:
-      bins,big_grid,res   = pickle.load(open(dn_filename+'_extrapolated.pkl','r'))
-      mbin                = bins[bin_num]
-      zbin                = big_grid
-      nbin                = res[bin_num]
-      norm                = simps(nbin,zbin)
+        bins,big_grid,res   = np.load(dn_filename+'_extrapolated.npy',encoding='latin1')
+        mbin                = bins[bin_num]
+        zbin                = big_grid
+        nbin                = res[bin_num]
+        norm                = np.trapz(nbin,zbin)
     dndz                = interp1d(zbin, nbin/norm, kind='linear',bounds_error=False,fill_value=0.)
-    print 'using z-bin', mbin, 'norm', norm
+    print('using z-bin', mbin, 'norm', norm)
     return dndz
 
 
