@@ -50,7 +50,7 @@ for index in indexsplit[rank]:
     tosave[:, 0] = ell_
     for ichi2, chi2max in enumerate(chi2maxs[::]):
         
-        Cl = getcl(kernel1, kernel2, chi1max, chi2max, nushift=0, prefindex=2)
+        Cl = 2*2* getcl(kernel1, kernel2, chi1max, chi2max, nushift=0, prefindex=2)
         tosave[:, ichi2+1] = Cl
 
     np.savetxt(outpath + '%d.txt'%index, tosave, fmt='%0.4e', header='ell, chi2')

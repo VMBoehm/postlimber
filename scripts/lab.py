@@ -3,6 +3,8 @@ import os, json
 import tools
 from scipy.interpolate import interp1d
 
+from kernelsnew import *
+
 package_path = os.path.dirname(os.path.abspath(__file__))+'/'
 dpath = package_path + '../PostBornEma/'
 
@@ -43,3 +45,58 @@ dchi_dz=(class_chi[1::]-class_chi[0:-1])/(class_z[1::]-class_z[0:-1])*h
 z_mean = (class_z[1::]+class_z[0:-1])/2
 dz_dchi = interp1d(class_chi*h,class_H,fill_value=0, bounds_error=False)
 dchi_dz = interp1d(z_mean,dchi_dz,fill_value=0, bounds_error=False)
+
+
+
+##Kernels
+def Gauss_redshift(z0,sigma_z):
+    def z_kernel(z):
+        return 1./np.sqrt(2.*np.pi)/sigma_z*np.exp(-(z-z0)**2/2./sigma_z**2)
+    return z_kernel
+
+def gal_kernel(z_kernel,ximax=5):
+    def chi_kernel(xi):
+        return z_kernel(z_chi(xi))*dz_dchi(xi)
+    return chi_kernel
+
+
+# 2) prospective LSST kernels
+def dNdz_LSST(bin_num,dn_filename = '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
+    if bin_num is "all":
+        zbin, nbin = np.load(dn_filename+'tot_extrapolated.npy',encoding='latin1')
+        norm                = np.trapz(nbin,zbin)
+        mbin                = 'None'
+    else:
+        bins,big_grid,res   = np.load(dn_filename+'_extrapolated.npy',encoding='latin1')
+        mbin                = bins[bin_num]
+        zbin                = big_grid
+        nbin                = res[bin_num]
+        norm                = np.trapz(nbin,zbin)
+    dndz                = interp1d(zbin, nbin/norm, kind='linear',bounds_error=False,fill_value=0.)
+    print('using z-bin', mbin, 'norm', norm)
+    return dndz
+
+
+
+def gal_clus(dNdz,b,bin_num):
+    """
+    dNdz: function returning function dndz for gicen bin number 
+    b: function returning bias as function of z 
+    bin_num: bin_number (either 'all' or 0-5)
+    """
+    p_z=dNdz(bin_num)
+    def kernel(x):
+        z = z_chi(x)
+        return b(z)*p_z(z)*dz_dchi(z)
+
+    return kernel
+
+def simple_bias(z):
+    return (1.+z)
+
+def constant_bias(z,b=1.):
+    return b
+
+
+
+lsst_kernel_cb = gal_clus(dNdz_LSST, constant_bias, 'all')
