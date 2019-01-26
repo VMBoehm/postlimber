@@ -22,8 +22,6 @@ w1d = w1.reshape(-1, 1)
 
 Cl = np.zeros((len(ell_),len(t_),len(t_)))
 I0_ltc = np.squeeze(I0_ltrc,axis=2)
-assert(np.squeeze(I0_ltrc,axis=2)==np.squeeze(I0_ltrc))
-
 
 junksize = np.ceil(len(t_)/size)
 max_num  = min((rank+1)*junksize,len(t_))
@@ -31,7 +29,6 @@ jjs      = np.arange(rank*junksize, max_num,dtype=np.int)
 print(junksize,max_num)
 
 Cl = np.zeros((len(jjs),len(ell_),len(t_)))
-chimax_test = np.zeros(len(jjs))
 
 for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
     for ii, chi2_max in enumerate((t_*chi_cmb)):
@@ -52,19 +49,16 @@ for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
 
 
       result = np.zeros_like(ell_)
-      for nn in range(len(ell_)):
-        Cl[jj,nn,ii] = np.real(np.sum(chifacs*I0_ltc[nn])) #not summing over r
-    chimax_test[jj]=chi1_max
+
+      Cl[jj,:,ii] = np.real(np.sum(chifacs*I0_ltc, axis=(1,2))) #not summing over r
 
 result = comm.gather(Cl, root=0)
 ranks  = comm.gather(rank, root =0)
-chimax_test  = comm.gather(chimax_test, root =0)
 
 
 if rank ==0:
     cl = np.vstack([result[ii] for ii in range(size)])
-    chimax_test = np.vstack([chimax_test[ii] for ii in range(size)])
-    print(chimax_test)
+    print(cl.shape)
     np.swapaxes(cl,0,1)
     print(cl.shape)
     cl*=(1./np.pi**2/2.*prefac**2)
