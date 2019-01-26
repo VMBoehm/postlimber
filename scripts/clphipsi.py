@@ -53,27 +53,28 @@ for index in indexsplit[rank]:
     
     result = np.zeros((ell_.size, chi2s.size))
     begin = time()
-    for ichi2, chi2 in enumerate(chi2s[::]):
+    for ichi2, chi2 in enumerate(chi2s):
         
         chi1fac00 = (lensing_kernel(t1d*chi2, chi1max) * D_chi(t1d*chi2))
         chi1fac01 = (lensing_kernel(1/t1d*chi2, chi1max) * D_chi(1/t1d*chi2))
         chi1fac01 = chi1fac01 * t1d**((nushift + nu_n_).reshape(1, -1)-2)
         chi1fac = chi1fac00 + chi1fac01
-        #print(chi1fac.shape)
+        #if rank == 0: print(chi1fac.shape)
 
-        chi2fac = chi2**(1**(1-(nushift + nu_n_.reshape(1, -1))))
+        chi2fac = chi2**(1-(nushift + nu_n_.reshape(1, -1)))
         chi2fac *= D_chi(chi2)
         chi2fac *= (1 + z_chi(chi2))
-        #print(chi2fac.shape)
+        #if rank == 0: print(chi2fac.shape)
         
         
         Cl = np.zeros_like(ell_)
         for ii in range(ell_.size):
-            #matrix = w1d*chi2fac*chi1fac*I_ltc
-            Cl[ii] = np.sum(w1d * chi2fac* chi1fac * I_ltc[ii])
+            matrix = w1d * chi2fac* chi1fac * I_ltc[ii]
+            Cl[ii] = np.sum(matrix)
         
         #print(matrix.shape)
-        Cl *= chi1max *1./np.pi**2/2.* prefac**prefindex / 4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
+        Cl *= chi1max *1./np.pi**2/2.* prefac**prefindex /2 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
+        #Cl *= 1./np.pi**2/2.* prefac**prefindex /4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
         result[:, ichi2] = Cl
 
     np.savetxt(outpath + '%d.txt'%index, result, fmt='%0.4e', header='ell, chi2')
