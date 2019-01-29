@@ -54,7 +54,7 @@ for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
 
 
       for nn  in range(ell_.size):
-        Cl[jj][nn][ii] = np.sum(chifacs*I0_ltrc[nn])
+        Cl[jj][nn][ii] = chi1_max*np.real(np.sum(chifacs*I0_ltrc[nn]))
 
     chimax_test[jj]=chi1_max
 
@@ -71,7 +71,7 @@ if rank ==0:
     cl = np.vstack([result[ii] for ii in range(size)])
     chimax_test = np.vstack([chimax_test[ii] for ii in range(size)])
     print(chimax_test)
-    np.swapaxes(cl,0,1)
+    cl = np.swapaxes(cl,0,1)
     print(cl.shape)
-    cl*=(chi_cmb*1./np.pi**2/2.*prefac**2/4.*2.**2)
+    cl*=(1./np.pi**2/2.*prefac**2/4.*2.**2)
     np.save('../G_matrices/clphiphi_parallel',cl)
