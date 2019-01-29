@@ -37,26 +37,23 @@ w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 n=0
 
 for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
-    for ii, chi2_max in enumerate((t_*chi_cmb)):
+  for ii, chi2_max in enumerate((t_*chi_cmb)):
 
-      chi1fac0 = (lensing_kernel(r2d*chi1_max, chi1_max)*D_chi(r2d*chi1_max))
-      chi1fac0 = chi1fac0 *(r2d*chi1_max)**(1-nu_n_.reshape(1, 1, -1))
+    chi1fac0 = (lensing_kernel(r2d*chi1_max, chi1_max)*D_chi(r2d*chi1_max))
+    chi1fac0 = chi1fac0 *(r2d*chi1_max)**(1-nu_n_.reshape(1, 1, -1))
 
-      chi2fac00 = (lensing_kernel(t2d*r2d*chi1_max, chi2_max)*D_chi(r2d*t2d*chi1_max))
-      chi2fac01 = (lensing_kernel(1./t2d*r2d*chi1_max, chi2_max)*D_chi(r2d*1./t2d*chi1_max))
-      chi2fac01 = chi2fac01 * t2d**(n+nu_n_.reshape(1, 1, -1)-2)
-      chi2fac0  = chi2fac00 + chi2fac01
-
-      chifacs   = w11*w12*chi1fac0* chi2fac0
+    chi2fac00 = (lensing_kernel(t2d*r2d*chi1_max, chi2_max)*D_chi(r2d*t2d*chi1_max))
+    chi2fac01 = (lensing_kernel(1./t2d*r2d*chi1_max, chi2_max)*D_chi(r2d*1./t2d*chi1_max))
+    chi2fac01 = chi2fac01 * t2d**(n+nu_n_.reshape(1, 1, -1)-2)
+    chi2fac0  = chi2fac00 + chi2fac01
 
 
+    chifacs = w11*w12*chi1fac0* chi2fac0
 
-      for nn  in range(ell_.size):
-        Cl[jj,nn,ii] = chi1_max*np.sum(chifacs*I0_ltrc[nn])
+    for nn  in range(ell_.size):
+      Cl[jj][nn][ii] = chi1_max*np.real(np.sum(chifacs*I0_ltrc[nn]))
 
     chimax_test[jj] = chi1_max
-
-
 
 
 
