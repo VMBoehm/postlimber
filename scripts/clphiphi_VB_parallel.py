@@ -36,8 +36,6 @@ w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 n=0
 
-Cl = np.zeros((len(jjs),len(ell_),len(t_)))
-chimax_test = np.zeros(len(jjs))
 for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
     for ii, chi2_max in enumerate((t_*chi_cmb)):
 
@@ -49,14 +47,14 @@ for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
       chi2fac01 = chi2fac01 * t2d**(n+nu_n_.reshape(1, 1, -1)-2)
       chi2fac0  = chi2fac00 + chi2fac01
 
-      chifacs = w11*w12*chi1fac0* chi2fac0
+      chifacs   = w11*w12*chi1fac0* chi2fac0
 
 
 
       for nn  in range(ell_.size):
-        Cl[jj][nn][ii] = chi1_max*np.real(np.sum(chifacs*I0_ltrc[nn]))
+        Cl[jj,nn,ii] = chi1_max*np.sum(chifacs*I0_ltrc[nn])
 
-    chimax_test[jj]=chi1_max
+    chimax_test[jj] = chi1_max
 
 
 
