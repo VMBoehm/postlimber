@@ -41,11 +41,11 @@ if rank == 0: print('chi1 split amongst ranks = ', chi1maxsplit)
 
 nushift = 2 
 prefindex = 1
+I_ltc = np.squeeze(I2_ltrc)
+print(I_ltc.shape)
 
 t1d = t_.reshape(-1, 1)
 w1d = w1.reshape(-1, 1)
-I_ltc = np.squeeze(I0_ltrc)
-print(I_ltc.shape)
 
 Clmatrix = np.zeros((len(t_),len(ell_),len(t_)))
 
@@ -65,7 +65,7 @@ for index in indexsplit[rank]:
 
         chi2fac = chi2**(1-(nushift + nu_n_.reshape(1, -1)))
         chi2fac *= D_chi(chi2)
-        chi2fac *= (1 + z_chi(chi2))
+        #chi2fac *= (1 + z_chi(chi2))
         #if rank == 0: print(chi2fac.shape)
         
         
@@ -75,8 +75,7 @@ for index in indexsplit[rank]:
             Cl[ii] = np.sum(matrix)
         
         #print(matrix.shape)
-        Cl *= chi1max *1./np.pi**2/2.* prefac**prefindex /2 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
-        #Cl *= 1./np.pi**2/2.* prefac**prefindex /4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
+        Cl *= 1./np.pi**2/2.* prefac**prefindex /2 *2 #1/pi**2/2 from FFTlog, 2 from Gauss Quad, 2 for phi
         result[:, ichi2] = Cl
 
     Clmatrix[index] = result
@@ -86,12 +85,12 @@ for index in indexsplit[rank]:
 
 
 
-result = comm.gather(Clmatrix, root=0)
-ranks  = comm.gather(rank, root =0)
-
-
-if rank ==0:
-    cl = np.vstack([result[ii] for ii in range(size)])
-    cl = np.swapaxes(cl,0,1)
-    print(cl.shape)
-    np.save('../output/clphidelta',cl)
+##result = comm.gather(Clmatrix, root=0)
+##ranks  = comm.gather(rank, root =0)
+##
+##
+##if rank ==0:
+##    cl = np.vstack([result[ii] for ii in range(wsize)])
+##    cl = np.swapaxes(cl,0,1)
+##    print(cl.shape)
+##    np.save('../output/clphidelta',cl)

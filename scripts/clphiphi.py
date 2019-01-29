@@ -23,7 +23,7 @@ def lensing_kernel(xi, xmax):
 
 
 ####################
-outpath = './output/clphiphi2/'
+outpath = '../output/clphiphi/'
 try: os.makedirs(outpath)
 except: pass
 
