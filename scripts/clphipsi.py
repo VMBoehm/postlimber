@@ -72,9 +72,7 @@ for index in indexsplit[rank]:
             matrix = w1d * chi2fac* chi1fac * I_ltc[ii]
             Cl[ii] = np.sum(matrix)
         
-        #print(matrix.shape)
-        Cl *= chi1max *1./np.pi**2/2.* prefac**prefindex /2 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
-        #Cl *= 1./np.pi**2/2.* prefac**prefindex /4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
+        Cl *= 1./np.pi**2/2.* prefac**prefindex /2 *2 #1/pi**2/2 from FFTlog, 2 from Gauss Quad, 2 for phi integral
         result[:, ichi2] = Cl
 
     np.savetxt(outpath + '%d.txt'%index, result, fmt='%0.4e', header='ell, chi2')
