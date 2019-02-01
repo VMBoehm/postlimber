@@ -22,7 +22,7 @@ print(wsize, rank)
 outpath = './output/'
 
 #Kernels
-clppmesh = np.load('../G_matrices/clphiphi.npy')
+clppmesh = np.load('../G_matrices/clphiphi_parallel.npy')
 chis = np.loadtxt('../output/chis.txt')
 indexchi = {}
 for i in range(chis.size): indexchi[chis[i]] = i
@@ -68,7 +68,7 @@ indexsplit = np.array_split(indexes, wsize)
 cl22 = np.zeros((ell_.size, ell_.size))
 
 for il in indexsplit[rank]:
-    print('Rank %d for index '%rank, il, ' of ', indexsplit[rank])
+    if rank == 0: print('Rank %d for index '%rank, il, ' of ', indexsplit[rank])
     chi1fac0 = (kernel1(r2d*chi1max, chi1max) * D_chi(r2d*chi1max))
     chi1fac0 = chi1fac0 * (r2d*chi1max)**(1-(nushift + nu_n_.reshape(1, 1, -1)))
 

@@ -22,7 +22,7 @@ print(wsize, rank)
 outpath = './output/'
 
 #Kernels
-clppmesh = np.load('../G_matrices/clphiphi.npy')
+clppmesh = np.load('../G_matrices/clphiphi_parallel.npy')
 chis = np.loadtxt('../output/chis.txt')
 indexchi = {}
 for i in range(chis.size): indexchi[chis[i]] = i

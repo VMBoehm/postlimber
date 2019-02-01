@@ -1,4 +1,4 @@
-#Eq. 4.4 of the text
+#Eq. 4.5 of the text
 
 import numpy as np
 from mpi4py import MPI
@@ -22,44 +22,57 @@ print(wsize, rank)
 outpath = './output/'
 
 #Kernels
-clppmesh = np.load('../output/clphiphi.npy')
+clpdelmesh = np.load('../G_matrices/clphidelta.npy')
+clppsimesh = np.load('../G_matrices/clphipsi.npy')
+clpsipmesh = np.swapaxes(clppsimesh, 1, 2)
 chis = np.loadtxt('../output/chis.txt')
-indexchi = {}
-for i in range(chis.size): indexchi[chis[i]] = i
 
 
 def lensing_kernel(xi, xmax):
-    return (xmax - xi)/(xmax*xi) * (xmax > xi) * (1.+z_chi(xi))
+    return (xmax - xi)/(xmax*xi) * (xmax > xi) #* (1.+z_chi(xi)) This is already in the files
 
-
-def setup_lens_kernel(lindex):
-    chifac = np.diag(clppmesh[int(lindex)]).reshape(-1, 1)
-    kernel = lambda  xi, xmax :  chifac * lensing_kernel(xi, xmax)
-    return kernel
-        
-
+##
 galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
-
 
 
 ####################
 
 
-kernel1 = galaxy_kernel
 chi1max = chi_cmb
 chi2max = chi_cmb
-nushift = 2
-prefindex = 1
-In_ltrc = [I0_ltrc, None, I2_ltrc, None, I4_ltrc]
-I_ltrc = In_ltrc[nushift]
-Clmesh = []
 
-for lindex in range(ell_.size):
-    print(lindex)
-    kernel2 = setup_lens_kernel(lindex)
-    Cl = getcl(kernel1, kernel2, chi1max, chi2max, nushift, prefindex)
-    Clmesh.append(Cl)
-##
-Clmesh = np.array(Clmesh).T #to save L as first index
+#r2d, t2d = np.meshgrid(t_,t_)
+#w11, w12 = np.meshgrid(w1,w1)
+r2d, t2d = t_.reshape(1, -1), t_.reshape(-1, 1)
+w11, w12 = w1.reshape(1, -1), w1.reshape(-1, 1)
+# inflate by one dimensions (nu_n)
+#r2d, t2d = np.expand_dims(r2d, 2), np.expand_dims(t2d, 2)
+#w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
-np.save('../output/cl31aA', Clmesh)
+
+indexes = np.arange(ell_.size)
+ellsplit = np.array_split(ell_, wsize)
+indexsplit = np.array_split(indexes, wsize)
+
+cl31ab = np.zeros((ell_.size, ell_.size))
+
+chipkernel = galaxy_kernel(r2d*chi_cmb, chi_cmb)
+chikernel = lensing_kernel(t2d*chi_cmb, chi_cmb)
+fac1 = clpdelmesh
+allfacs = fac1 * chikernel * chipkernel
+print(chikernel.shape, chipkernel.shape, allfacs.shape)
+
+for il in indexsplit[rank]:
+    
+    fac2 = np.diag(clppsimesh[il]).reshape(-1, 1)
+    matrix = w11*w12*fac2*allfacs
+    Cl = matrix.sum(axis=(1, 2)) / 4
+    cl31ab[:, il] = Cl
+
+
+result = comm.gather(cl31ab, root=0)
+
+if rank ==0:
+    Cl31ab = np.concatenate([result[ii][:, indexsplit[ii]] for ii in range(wsize)], axis=-1)
+    print(Cl31ab.shape)
+    np.save('../output/cl31aB', Cl31ab)
