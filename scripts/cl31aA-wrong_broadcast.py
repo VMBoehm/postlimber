@@ -1,4 +1,4 @@
-#Eq. 4.5 of the text
+#Eq. 4.3 of the text
 
 import numpy as np
 from mpi4py import MPI
@@ -31,47 +31,47 @@ for i in range(chis.size): indexchi[chis[i]] = i
 def lensing_kernel(xi, xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi) * (1.+z_chi(xi))
 
-##
-galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
 
-def setup_galaxy_kernel(lindex):
-    chifac = np.diag(clppmesh[int(lindex)]).reshape(-1, 1) #always modify first kernel with this reshape because broadcasting matches things with trailing index
-    kernel = lambda  xi, xmax :  chifac * galaxy_kernel(xi, xmax)
+def setup_lens_kernel(lindex):
+    chifac = np.diag(clppmesh[int(lindex)]).reshape(-1, 1) 
+    kernel = lambda  xi, xmax :  chifac * lensing_kernel(xi, xmax)
     return kernel
+        
 
+galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
 
 
 
 ####################
 
 
-kernel2 = lensing_kernel
+kernel1 = galaxy_kernel
 chi1max = chi_cmb
 chi2max = chi_cmb
 nushift = 2
 prefindex = 1
 In_ltrc = [I0_ltrc, None, I2_ltrc, None, I4_ltrc]
 I_ltrc = In_ltrc[nushift]
+Clmesh = []
 
 indexes = np.arange(ell_.size)
 ellsplit = np.array_split(ell_, wsize)
 indexsplit = np.array_split(indexes, wsize)
 
-cl13a = np.zeros((ell_.size, ell_.size))
+cl31aA = np.zeros((ell_.size, ell_.size))
 
 for il in indexsplit[rank]:
-    print('Rank %d for index '%rank, il, ' of ', indexsplit[rank])
-    kernel1 = setup_galaxy_kernel(il)
+    if rank ==0: print('Rank %d for index '%rank, il, ' of ', indexsplit[rank])
+    kernel2 = setup_lens_kernel(il) #mistake here is we are setting up kernel 2, this gets multiplied with r*t, not r==t_ only, so inconsistent
     Cl = getcl(kernel1, kernel2, chi1max, chi2max, nushift, prefindex)
-
-    cl13a[:, il] = Cl
-
+    cl31aA[:, il] = Cl
 ##
 
-result = comm.gather(cl13a, root=0)
+
+result = comm.gather(cl31aA, root=0)
 
 if rank ==0:
-    Cl13a = np.concatenate([result[ii][:, indexsplit[ii]] for ii in range(wsize)], axis=-1)
-    print(Cl13a.shape)
+    Cl31aA = np.concatenate([result[ii][:, indexsplit[ii]] for ii in range(wsize)], axis=-1)
+    print(Cl31aA.shape)
 
-    np.save('../output/cl13a', Cl13a)
+    np.save('../output/cl31aA', Cl31aA)
