@@ -97,4 +97,4 @@ if rank ==0:
     Cl13a = np.concatenate([result[ii][:, indexsplit[ii]] for ii in range(wsize)], axis=-1)
     print(Cl13a.shape)
 
-    np.save('../output/cl13a-v2', Cl13a)
+    np.save('../output/cm_clmesh/cl13a-phifac', Cl13a)

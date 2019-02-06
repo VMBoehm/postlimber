@@ -41,13 +41,8 @@ galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
 chi1max = chi_cmb
 chi2max = chi_cmb
 
-#r2d, t2d = np.meshgrid(t_,t_)
-#w11, w12 = np.meshgrid(w1,w1)
 r2d, t2d = t_.reshape(1, -1), t_.reshape(-1, 1)
 w11, w12 = w1.reshape(1, -1), w1.reshape(-1, 1)
-# inflate by one dimensions (nu_n)
-#r2d, t2d = np.expand_dims(r2d, 2), np.expand_dims(t2d, 2)
-#w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 
 indexes = np.arange(ell_.size)
@@ -69,10 +64,11 @@ for il in indexsplit[rank]:
     Cl = matrix.sum(axis=(1, 2)) / 4
     cl31ab[:, il] = Cl
 
+cl31ab *= chi_cmb**2
 
 result = comm.gather(cl31ab, root=0)
 
 if rank ==0:
     Cl31ab = np.concatenate([result[ii][:, indexsplit[ii]] for ii in range(wsize)], axis=-1)
     print(Cl31ab.shape)
-    np.save('../output/cl31aB', Cl31ab)
+    np.save('../output/cm_clmesh/cl31aB', Cl31ab)
