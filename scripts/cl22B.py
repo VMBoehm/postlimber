@@ -41,12 +41,10 @@ galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
 chi1max = chi_cmb
 chi2max = chi_cmb
 
-#r2d, t2d = np.meshgrid(t_,t_)
-#w11, w12 = np.meshgrid(w1,w1)
-r2d, t2d = t_.reshape(1, -1), t_.reshape(-1, 1)
+r1d, t1d = t_.reshape(1, -1), t_.reshape(-1, 1)
 w11, w12 = w1.reshape(1, -1), w1.reshape(-1, 1)
 # inflate by one dimensions (nu_n)
-#r2d, t2d = np.expand_dims(r2d, 2), np.expand_dims(t2d, 2)
+#r2d, t2d = np.expand_dims(r1d, 2), np.expand_dims(t1d, 2)
 #w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 
@@ -56,8 +54,8 @@ indexsplit = np.array_split(indexes, wsize)
 
 cl22 = np.zeros((ell_.size, ell_.size))
 
-chipkernel = galaxy_kernel(r2d*chi_cmb, chi_cmb)
-chikernel = lensing_kernel(t2d*chi_cmb, chi_cmb)
+chipkernel = galaxy_kernel(r1d*chi_cmb, chi_cmb)
+chikernel = lensing_kernel(t1d*chi_cmb, chi_cmb)
 fac1 = clpsipmesh
 allfacs = fac1 * chikernel * chipkernel
 
