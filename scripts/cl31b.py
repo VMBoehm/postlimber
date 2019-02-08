@@ -24,7 +24,7 @@ outpath = './output/'
 
 #Kernels
 #clpdelmesh = np.load('../G_matrices/clphidelta_parallel.npy')
-clpdelmesh = np.load('../output/cm_clmesh/clphideltacmb.npy')
+clpdelmesh = np.load('../output/cm_clmesh/clphideltacmb_1plusz.npy')
 chis = np.loadtxt('../output/chis.txt')
 
 
@@ -97,4 +97,4 @@ result = comm.gather(cl31, root=0)
 if rank ==0:
     Cl31 = np.concatenate([result[ii][:, indexsplit[ii]] for ii in range(wsize)], axis=-1)
     print(Cl31.shape)
-    np.save('../output/cm_clmesh/cl31b', Cl31.T)
+    np.save('../output/cm_clmesh/cl31b_1plusz', Cl31.T)
