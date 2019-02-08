@@ -53,7 +53,7 @@ for jj_, jj in enumerate(jjs):
     for ii  in range(ell_.size):        
         result[ii] = np.real(np.sum(chifacs*I0_ltrc[ii]))
 
-    Cl[jj_] = 2.*chi_cmb*result*1./np.pi**2/2.*prefac/2. 
+    Cl[jj_] = 2.*chi_cmb*result*1./np.pi**2/2.*prefac**2/2. 
     Chis[jj_] = chi
 
 
