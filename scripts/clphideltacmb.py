@@ -22,7 +22,7 @@ print(wsize, rank)
 
 #Kernels
 def lensing_kernel(xi, xmax):
-    return (xmax - xi)/(xmax*xi) * (xmax > xi)# * (1.+z_chi(xi))
+    return (xmax - xi)/(xmax*xi) * (xmax > xi) * (1.+z_chi(xi))
 
 galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
 
@@ -60,6 +60,7 @@ kernel2 = lsst_kernel_cb
 
 clphidel = np.zeros((ell_.size, t_.size, t_.size))
 
+outpath = '../output/clphideltacmb_1plusz'
 for index in indexsplit[rank]:
     print('Rank %d for index '%rank, index)
     chi1max = chi1maxs[index]
@@ -88,20 +89,34 @@ for index in indexsplit[rank]:
 
         Cl = 2 * chi1maxt * result *1./np.pi**2/2.* prefac**prefindex / 4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
 
-        np.savetxt('../output/clphideltacmb2/%d-%d.txt'%(index, ichi1), Cl)
+        np.savetxt(outpath + '/%d-%d.txt'%(index, ichi1), Cl)
         tosave[:, ichi1] = Cl
         clphidel[:, index, ichi1] = Cl
 
 
-    np.savetxt('../output/clphideltacmb2/%d.txt'%index, tosave, fmt='%0.4e', header='ell, chi2')
+    np.savetxt(outpath + '/%d.txt'%index, tosave, fmt='%0.4e', header='ell, chi2')
 
 
     if rank == 0: print('Time taken for index %d = '%index, time()-begin)
 
 
-result = comm.gather(clphidel, root=0)
+##result = comm.gather(clphidel, root=0)
+##
+##if rank ==0:
+##    Clphidel = np.concatenate([result[ii][:, indexsplit[ii], :] for ii in range(wsize)], axis=1)
+##    print(Clphidel.shape)
+##    np.save('../output/cm_clmesh/clphideltacmb_1plusz', Clphidel)
+##
+##
+##
+comm.barrier()
 
 if rank ==0:
-    Clphidel = np.concatenate([result[ii][:, indexsplit[ii], :] for ii in range(wsize)], axis=1)
-    print(Clphidel.shape)
-    np.save('../output/cm_clmesh/clphideltacmb2', Clphidel)
+    Clphidel = np.zeros((t_.size, ell_.size, t_.size))
+    for i in range(t_.size):
+        Clphidel[i] = np.loadtxt(outpath + '/%d.txt'%i)
+
+    Clphidel = np.swapaxes(Clphidel, 0, 1)
+    np.save('../output/cm_clmesh/clphideltacmb_1plusz', Clphidel)
+
+
