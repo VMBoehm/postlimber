@@ -21,7 +21,7 @@ print(wsize, rank)
 
 #Kernels
 def lensing_kernel(xi, xmax):
-    return (xmax - xi)/(xmax*xi) * (xmax > xi) #* (1.+z_chi(xi))
+    return (xmax - xi)/(xmax*xi) * (xmax > xi) * (1.+z_chi(xi))
 
 galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
 
