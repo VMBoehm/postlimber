@@ -48,13 +48,13 @@ for jj_, jj in enumerate(jjs):
     chimax   = r*t*chi_cmb
     chi      = t*chi_cmb
     chi1fac0 = D_chi(chi)
-    chi1fac0 = chi1fac0*(chi)**(-(n+nu_n_.reshape(1, -1)))
-    if max(chi*t1d)>chimax
+    chi1fac0 = chi1fac0*(chi)**(1.-(n+nu_n_.reshape(1, -1)))
+    if max(chi*t1d)>chimax:
         print(chi,chimax)
     chi2fac00 = D_chi(chi*t1d)*lensing_kernel(chi*t1d,chimax)
-    chi2fac01 = D_chi(chi/t1d)*lensing_kernel(chi/t1d,chimax)
-    chi2fac01 = chi2fac01 * t1d**((n+nu_n_).reshape(1, -1)-2)
-    chi2fac0  = chi2fac00 + chi2fac01
+    #chi2fac01 = D_chi(chi/t1d)*lensing_kernel(chi/t1d,chimax)
+    #chi2fac01 = chi2fac01 * t1d**((n+nu_n_).reshape(1, -1)-2)
+    chi2fac0  = chi2fac00 #+ chi2fac01
 
     chifacs   = w1d*chi1fac0* chi2fac0
 
@@ -80,7 +80,7 @@ if rank ==0:
     print(cl.shape)
     chimaxs = np.reshape(chimaxs,(len(t_),len(t_)))
     print(chimaxs.shape)
-    np.save('../G_matrices/clphidelta_parallel_MB2.npy',cl)
+    np.save('../G_matrices/clphidelta_parallel_MB2_nosym.npy',cl)
     np.save('../G_matrices/clphidelta_parallel_MB2_chimaxs.npy',chimaxs)
 
 
