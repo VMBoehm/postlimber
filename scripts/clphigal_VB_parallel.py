@@ -14,7 +14,7 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 def lensing_kernel(xi, xmax):
-    return (xmax - xi)/(xmax*xi) * (xmax > xi)
+    return (xmax - xi)/(xmax*xi) * (xmax > xi)*(1.+z_chi(xi))
 
 
 
