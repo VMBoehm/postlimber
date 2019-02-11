@@ -17,7 +17,7 @@ size = comm.Get_size()
 def lensing_kernel(xi, xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi) * (1.+z_chi(xi))
 
-r2d, t2d = np.meshgrid(t_,t_)
+r2d, t2d = np.meshgrid(t_[0:50],t_)
 
 trs      = (r2d*t2d).flatten()
 
@@ -70,12 +70,12 @@ if rank ==0:
     print(cl.shape)
     cl = np.swapaxes(cl,0,1)
     print(cl.shape)
-    cl = np.reshape(cl,(len(ell_),len(t_),len(t_)))
+    cl = np.reshape(cl,(len(ell_),r2d.shape[0],r2d.shape[1]))
     print(cl.shape)
-    chis = np.reshape(chis,(len(t_),len(t_)))
+    chis = np.reshape(chis,(r2d.shape[0],r2d.shape[1]))
     print(chis.shape)
-    np.save('../G_matrices/clpsiphi_parallel_MB2.npy',cl)
-    np.save('../G_matrices/clphidelta_parallel_MB2_chis.npy',chis)
+    np.save('../G_matrices/clpsiphi_parallel_MB2_test.npy',cl)
+    np.save('../G_matrices/clphidelta_parallel_MB2_chis_test.npy',chis)
 
 #factor 2 for every phi = -2 int W psi
 #factor of 1/2 for every gaussian quadrature
