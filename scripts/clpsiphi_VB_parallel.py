@@ -31,6 +31,7 @@ print(junksize,max_num)
 Cl       = np.zeros((len(jjs),len(ell_)))
 Chis     = np.zeros(len(jjs))
 
+I0 = np.squeeze(I0_ltrc)
 
 # inflate by one dimensions (nu_n)
 t2 = np.expand_dims(t_, 1)
@@ -53,7 +54,7 @@ for jj_, jj in enumerate(jjs):
 
     result    = np.zeros_like(ell_)
     for ii  in range(ell_.size):        
-        result[ii] = np.real(np.sum(chifacs*I0_ltrc[ii]))
+        result[ii] = np.real(np.sum(chifacs*I0[ii]))
 
     Cl[jj_] = 2.*result*1./np.pi**2/2.*prefac**2/2. 
     Chis[jj_] = chi
