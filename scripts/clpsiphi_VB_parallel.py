@@ -23,6 +23,8 @@ trs      = (r2d*t2d).flatten()
 
 junksize = np.ceil(len(trs)/size)
 max_num  = min((rank+1)*junksize,len(trs))
+if rank == size-1:
+    max_num = len(trs)
 jjs      = np.arange(rank*junksize, max_num,dtype=np.int)
 print(junksize,max_num)
 
@@ -40,7 +42,7 @@ for jj_, jj in enumerate(jjs):
     chi      = (chi_cmb*trs)[jj]
     #fill grid of shape t_,n
     chi1fac0 = D_chi(chi)*(1.+z_chi(chi))
-    chi1fac0 = chi1fac0 *(chi)**(-nu_n_.reshape(1,-1))
+    chi1fac0 = chi1fac0 *(chi)**(1.-nu_n_.reshape(1,-1))
 
     chi2fac00 = (lensing_kernel(t2*chi, chi_cmb)*D_chi(t2*chi))
     chi2fac01 = (lensing_kernel(1./t2*chi, chi_cmb)*D_chi(1./t2*chi))
@@ -53,7 +55,7 @@ for jj_, jj in enumerate(jjs):
     for ii  in range(ell_.size):        
         result[ii] = np.real(np.sum(chifacs*I0_ltrc[ii]))
 
-    Cl[jj_] = 2.*chi_cmb*result*1./np.pi**2/2.*prefac**2/2. 
+    Cl[jj_] = 2.*result*1./np.pi**2/2.*prefac**2/2. 
     Chis[jj_] = chi
 
 
