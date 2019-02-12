@@ -17,7 +17,7 @@ size = comm.Get_size()
 def lensing_kernel(xi, xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi)*(1.+z_chi(xi)) 
 
-r2d, t2d = np.meshgrid(t_[0:50],t_)
+r2d, t2d = np.meshgrid(t_,t_)
 
 ts      = (t2d).flatten()
 rs      = (r2d).flatten()
@@ -30,6 +30,7 @@ print(junksize,max_num)
 
 Cl       = np.zeros((len(jjs),len(ell_)))
 chimaxs  = np.zeros(len(jjs))
+r_test = np.zeros(len(jjs))
 w11, w12 = np.meshgrid(w1,w1)
 
 I2_ltc=np.squeeze(I2_ltrc)
@@ -46,7 +47,7 @@ for jj_, jj in enumerate(jjs):
     r = rs[jj]
     t = ts[jj]
     chimax   = r*t*chi_cmb
-    chi      = t*chi_cmb
+    chi      = r*chi_cmb
     chi1fac0 = D_chi(chi)
     chi1fac0 = chi1fac0*(chi)**(1.-(n+nu_n_.reshape(1, -1)))
     if max(chi*t1d)>chimax:
@@ -62,26 +63,29 @@ for jj_, jj in enumerate(jjs):
     for ii  in range(ell_.size):        
         result[ii] = np.real(np.sum(chifacs*I2_ltc[ii]))
     
-
+    r_test[jj_] = r
     Cl[jj_] = result*1./np.pi**2/2.*prefac/2.*2
     chimaxs[jj_] = chimax
 
 result  = comm.gather(Cl, root=0)
 chimaxs = comm.gather(chimaxs,root=0)
-
+r_test  = comm.gather(r_test,root=0)
 
 if rank ==0:
+
     cl = np.vstack([result[ii] for ii in range(size)])
     chimaxs = np.vstack([chimaxs[ii] for ii in range(size)])
+    rs = np.vstack([r_test[ii] for ii in range(size)])
     print(cl.shape)
     cl = np.swapaxes(cl,0,1)
     print(cl.shape)
     cl = np.reshape(cl,(len(ell_),r2d.shape[0],r2d.shape[1]))
     print(cl.shape)
     chimaxs = np.reshape(chimaxs,(r2d.shape[0],r2d.shape[1]))
+    np.save('../G_matrices/clphidelta_parallel_MB2_r2d.npy',rs)
     print(chimaxs.shape)
-    np.save('../G_matrices/clphidelta_parallel_MB2_test.npy',cl)
-    np.save('../G_matrices/clphidelta_parallel_MB2_test_chimaxs.npy',chimaxs)
+    np.save('../G_matrices/clphidelta_parallel_MB2.npy',cl)
+    np.save('../G_matrices/clphidelta_parallel_MB2_chimaxs.npy',chimaxs)
 
 
 
