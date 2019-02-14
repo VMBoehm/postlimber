@@ -76,7 +76,22 @@ def dNdz_LSST(bin_num,dn_filename = '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
     #print('using z-bin', mbin, 'norm', norm)
     return dndz
 
+#you want to adapt chimin and chimax to actual p(z)
+def gal_lens(p_z,chimin=1e-2,chimax=chi_cmb):
+    
+    chis = np.linspace(chimin,chimax,200)
 
+    result = np.zeros(len(chis))
+    for ii, chi in enumerate(chis):
+        chiprime = np.linspace(chi,chimax,200)
+        z = z_chi(chiprime)
+        pchiprime = p_z(z)*dz_dchi(z)
+        weight = pchi*(chiprime-chi)/chiprime
+        result[ii] = 1/chi*np.trapz(weight,chiprime)
+    
+    kernel = interp1d(chis,result,bounds_error=False, fill_value=0.)
+
+    return kernel
 
 def gal_clus(dNdz,b,bin_num):
     """
