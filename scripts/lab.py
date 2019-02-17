@@ -86,7 +86,7 @@ def gal_lens(p_z,chimin=1e-2,chimax=chi_cmb):
         chiprime = np.linspace(chi,chimax,200)
         z = z_chi(chiprime)
         pchiprime = p_z(z)*dz_dchi(z)
-        weight = pchi*(chiprime-chi)/chiprime
+        weight = pchiprime*(chiprime-chi)/chiprime
         result[ii] = 1/chi*np.trapz(weight,chiprime)
     
     kernel = interp1d(chis,result,bounds_error=False, fill_value=0.)
@@ -106,7 +106,8 @@ def gal_clus(dNdz,b,bin_num):
 
     return kernel
 
-def simple_bias(z):
+def simple_bias(x):
+    z = z_chi(x)
     return (1.+z)
 
 def constant_bias(z,b=1.):
