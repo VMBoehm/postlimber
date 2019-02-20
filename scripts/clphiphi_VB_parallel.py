@@ -8,12 +8,20 @@ Created on Fri Jan 25 12:34:14 2019
 
 from lab import *
 from mpi4py import MPI
+import sys
+import pickle
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
+paramfile = sys.argv[1]
 
+params = pickle.load(open(paramfile,'rb'))
+
+
+file_ext = params['ext']
+chimax = params['chimax']
 
 
 junksize = np.ceil(len(t_)/size)
@@ -36,8 +44,9 @@ w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 n=0
 
-for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
-  for ii, chi2_max in enumerate((t_*chi_cmb)):
+
+for jj, chi1_max in enumerate((t_*chimax)[jjs]):
+  for ii, chi2_max in enumerate((t_*chimax)):
 
     chi1fac0 = (lensing_kernel(r2d*chi1_max, chi1_max)*D_chi(r2d*chi1_max))
     chi1fac0 = chi1fac0 *(r2d*chi1_max)**(1-nu_n_.reshape(1, 1, -1))
@@ -69,4 +78,4 @@ if rank ==0:
     cl = np.swapaxes(cl,0,1)
     print(cl.shape)
     cl*=(1./np.pi**2/2.*prefac**2/4.*2.**2)
-    np.save('../G_matrices/clphiphi_parallel',cl)
+    np.save('../G_matrices/clphiphi_parallel_%s'%file_ext,cl)

@@ -76,7 +76,7 @@ def dNdz_LSST(bin_num,dn_filename = '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
         nbin                = res[bin_num]
         norm                = np.trapz(nbin,zbin)
     dndz                = interp1d(zbin, nbin/norm, kind='linear',bounds_error=False,fill_value=0.)
-    #print('using z-bin', mbin, 'norm', norm)
+    print('using z-bin', mbin, 'norm', norm)
     return dndz
 
 #you want to adapt chimin and chimax to actual p(z)

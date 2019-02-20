@@ -18,7 +18,7 @@ size = comm.Get_size()
 paramfile = sys.argv[1]
 
 params = pickle.load(open(paramfile,'rb'))
-
+print(len(t_),size)
 junksize = np.ceil(len(t_)/size)
 max_num  = min((rank+1)*junksize,len(t_))
 jjs      = np.arange(rank*junksize, max_num,dtype=np.int)

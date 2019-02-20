@@ -7,12 +7,20 @@ calculating clpsiphi term for Eq. 4.8/4.9
 
 from lab import *
 from mpi4py import MPI
+import sys
+import pickle
+
+
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
+paramfile = sys.argv[1]
+params = pickle.load(open(paramfile,'rb'))
 
+chimax = params['chimax']
+chi_source = params['chisource']
 
 def lensing_kernel(xi, xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi) * (1.+z_chi(xi))
@@ -40,13 +48,13 @@ w12= np.expand_dims(w1, 1)
 n=0
 
 for jj_, jj in enumerate(jjs):
-    chi      = (chi_cmb*trs)[jj]
+    chi      = (chimax*trs)[jj]
     #fill grid of shape t_,n
     chi1fac0 = D_chi(chi)*(1.+z_chi(chi))
     chi1fac0 = chi1fac0 *(chi)**(1.-nu_n_.reshape(1,-1))
 
-    chi2fac00 = (lensing_kernel(t2*chi, chi_cmb)*D_chi(t2*chi))
-    chi2fac01 = (lensing_kernel(1./t2*chi, chi_cmb)*D_chi(1./t2*chi))
+    chi2fac00 = (lensing_kernel(t2*chi, chi_source)*D_chi(t2*chi))
+    chi2fac01 = (lensing_kernel(1./t2*chi, chi_source)*D_chi(1./t2*chi))
     chi2fac01 = chi2fac01 * t2**(n+nu_n_.reshape(1, -1)-2)
     chi2fac0  = chi2fac00 + chi2fac01
 
@@ -74,8 +82,8 @@ if rank ==0:
     print(cl.shape)
     chis = np.reshape(chis,(r2d.shape[0],r2d.shape[1]))
     print(chis.shape)
-    np.save('../G_matrices/clpsiphi_parallel_MB2_test.npy',cl)
-    np.save('../G_matrices/clphidelta_parallel_MB2_chis_test.npy',chis)
+    np.save('../G_matrices/clpsiphi_parallel_MB2_%s.npy'%file_ext,cl)
+    np.save('../G_matrices/clphidelta_parallel_MB2_chis_%s.npy'%file_ext,chis)
 
 #factor 2 for every phi = -2 int W psi
 #factor of 1/2 for every gaussian quadrature

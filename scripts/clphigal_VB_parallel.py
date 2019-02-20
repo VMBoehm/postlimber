@@ -8,75 +8,35 @@ clphidelta as needed in eq. 4.6
 
 from lab import *
 from mpi4py import MPI
+import pickle
+import sys
+
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
+paramfile = sys.argv[1]
 
-#general settings
-LSST = True
-#if not LSST redhsift kernel
-chi0 = chi_cmb/6.
-sigma_chi = chi_cmb/14.
-bin_num = 'all'
-# z_lens = 0.5
-chimax  = chi_cmb
-
-
-delta_lensing = True # set to False for galaxy lensing
-gal_bin = None
-
-if not delta_lensing:
-        dn_filename = '../LSSTdndzs/dndz_LSST_i27_SN5_3y'
-        if gal_bin is "all":
-            zbin, nbin = np.load(dn_filename+'tot_extrapolated.npy',encoding='latin1')
-            chi_low = min(1e-2,chi_z(min(zbin)))
-            chi_hi  = chi_z(max(zbin))
-        else:
-            bins,big_grid,res   = np.load(dn_filename+'_extrapolated.npy',encoding='latin1')
-            chi_low = max(chi_z(bins[gal_bin][0]-2*bins[gal_bin][2]),0.)
-            if gal_bin<4:
-                chi_hi  = chi_z(bins[gal_bin+1][0]+2.*bins[gal_bin+1][2])
-            else:
-                chi_hi  = chi_z(bins[gal_bin][0]+1.5)
-
-if LSST:
-    if delta_lensing: 
-        if chimax==chi_cmb:
-            file_ext = 'lsst%s_cmblens'%str(bin_num)
-        else:
-            file_ext = 'lsst%s_deltalens_z%.0e'%str(bin_num,z_lens)
-    else:
-        file_ext = 'lsst%s_lensbin_%s'%str(bin_num,gal_bin)
-else:
-    if delta_lensing: 
-        if chimax==chi_cmb:
-            file_ext = 'gaussgal_chi0%d_sigmachi%d_cmblens'%(chi0,sigma_chi)
-        else:
-            file_ext = 'gaussgal_chi0%d_sigmachi%d_deltalens_z%.0e'%str(chi0,sigma_chi,z_lens) 
-print(file_ext)
-
+params = pickle.load(open(paramfile,'rb'))
 #lensing kernel here should be independent of redshift distribution
 def lensing_kernel(xi,xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi)*(1.+z_chi(xi))
 
-else:
-    print('galaxy lensing with bin %s'%str(gal_bin))
-    p_z_lens = dNdz_LSST(gal_bin)
-    lensing_kernel = gal_lens(p_z_lens,chimin=max(1e-2,chi_low),chimax=chi_hi)
-    
-if LSST:
-    if bin_num == 'all':
+if params['LSST']:
+    if params['bin_num'] == 'all':
         def galax_kernel(x):
             return lsst_kernel_cb(x)*simple_bias(x)
     else:
         def galax_kernel(x):
-            return lsst_kernel_cbn[bin_num](x)*simple_bias(x)
+            return lsst_kernel_cbn[params['bin_num']](x)*simple_bias(x)
 else:
-    kernel = Gauss_chi(chi0,sigma_chi)
+    kernel = Gauss_chi(params['chi0'],params['sigma_chi'])
     def galax_kernel(x):
         return kernel(x)*simple_bias(x)
+
+chimax   = params['chimax']
+file_ext = params['ext']
 
 r2d, t2d = np.meshgrid(t_,t_)
 
@@ -104,7 +64,7 @@ kernel2  = galax_kernel
 n = 2
 
 for jj_, jj in enumerate(jjs):
-    chimax_l = chi_max*trs[jj]
+    chimax_l = chimax*trs[jj]
 
     chi1fac0 = (kernel1(r2d*chimax_l,chimax_l)*D_chi(r2d*chimax_l))
     chi1fac0 = chi1fac0 *(r2d*chimax_l)**(1-(n+nu_n_.reshape(1, 1, -1)))
