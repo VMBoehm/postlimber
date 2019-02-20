@@ -41,13 +41,16 @@ D_z   = interp1d(class_z,class_D,fill_value=0, bounds_error=False)
 
 #
 chi_cmb = chi_z(z_cmb)
-dchi_dz=(class_chi[1::]-class_chi[0:-1])/(class_z[1::]-class_z[0:-1])*h
-z_mean = (class_z[1::]+class_z[0:-1])/2
+dchi_dz = (class_chi[1::]-class_chi[0:-1])/(class_z[1::]-class_z[0:-1])*h
+z_mean  = (class_z[1::]+class_z[0:-1])/2
 dz_dchi = interp1d(class_chi*h,class_H,fill_value=0, bounds_error=False)
 dchi_dz = interp1d(z_mean,dchi_dz,fill_value=0, bounds_error=False)
 
 
-
+def Gauss_chi(chi0,sigma_chi):
+    def kernel(chi):
+        return 1./np.sqrt(2.*np.pi)/sigma_chi*np.exp(-(chi-chi0)**2/2./sigma_chi**2)
+    return kernel
 ##Kernels
 def Gauss_redshift(z0,sigma_z):
     def z_kernel(z):
@@ -85,7 +88,7 @@ def gal_lens(p_z,chimin=1e-2,chimax=chi_cmb):
     for ii, chi in enumerate(chis):
         chiprime = np.linspace(chi,chimax,200)
         z = z_chi(chiprime)
-        pchiprime = p_z(z)*dz_dchi(z)
+        pchiprime = p_z(z)*dz_dchi(chiprime)
         weight = pchiprime*(chiprime-chi)/chiprime
         result[ii] = 1/chi*np.trapz(weight,chiprime)
     
@@ -102,7 +105,7 @@ def gal_clus(dNdz,b,bin_num):
     p_z=dNdz(bin_num)
     def kernel(x):
         z = z_chi(x)
-        return b(z)*p_z(z)*dz_dchi(z)
+        return b(z)*p_z(z)*dz_dchi(x)
 
     return kernel
 

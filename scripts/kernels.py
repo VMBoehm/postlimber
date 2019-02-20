@@ -79,6 +79,9 @@ def CMB_lens(chicmb,cosmo):
 def simple_bias(z):
     return 1.+z
 
+def constant_bias(z):
+    return 1.
+
 
 def dNdz_LSST(bin_num,dn_filename = '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
     if bin_num is "all":
