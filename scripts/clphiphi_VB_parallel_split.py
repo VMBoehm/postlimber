@@ -8,13 +8,16 @@ clphiphi(trchi,rchi) as needed for M matrix calculation
 
 from lab import *
 from mpi4py import MPI
+import pickle
+import sys
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
+paramfile = sys.argv[1]
 
-
+params = pickle.load(open(paramfile,'rb'))
 
 junksize = np.ceil(len(t_)/size)
 max_num  = min((rank+1)*junksize,len(t_))
@@ -37,8 +40,11 @@ w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 n=0
 
+file_ext = params['ext']
+chimax = params['chimax']
+
 # fixing r
-for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
+for jj, chi1_max in enumerate((t_*chimax)[jjs]):
   # for fixed r go from 0 to chi_max1, corresponding to chi_cmb*r*t
   for ii, chi2_max in enumerate((t_*chi1_max)):
 
@@ -75,5 +81,5 @@ if rank ==0:
     cl = np.swapaxes(cl,0,1)
     print(cl.shape)
     cl*=(1./np.pi**2/2.*prefac**2/4.*2.**2)
-    np.save('../G_matrices/clphiphi_rt',[chimax1s,chimax2s,cl])
+    np.save('../G_matrices/clphiphi_rt_%s'%file_ext,[chimax1s,chimax2s,cl])
 

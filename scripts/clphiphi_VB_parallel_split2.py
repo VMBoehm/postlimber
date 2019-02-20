@@ -8,11 +8,15 @@ clphiphi(rchi/t,rchi) as needed for M matrix calculation
 
 from lab import *
 from mpi4py import MPI
+import pickle
+import sys
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
+paramfile = sys.argv[1]
+params = pickle.load(open(paramfile,'rb'))
 
 
 
@@ -36,12 +40,11 @@ r2d, t2d = np.expand_dims(r2d, 2), np.expand_dims(t2d, 2)
 w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 n=0
+file_ext = params['ext']
+chimax = params['chimax']
 
-# fixing r
-for jj, chi1_max in enumerate((t_*chi_cmb)[jjs]):
-  # for fixed r go from 0 to chi_max1, corresponding to chi_cmb*r/t
+for jj, chi1_max in enumerate((t_*chimax)[jjs]):
   for ii, chi2_max in enumerate((chi1_max/t_)):
-
     chi1fac0 = (lensing_kernel(r2d*chi1_max, chi1_max)*D_chi(r2d*chi1_max))
     chi1fac0 = chi1fac0 *(r2d*chi1_max)**(1-nu_n_.reshape(1, 1, -1))
 
@@ -75,5 +78,5 @@ if rank ==0:
     cl = np.swapaxes(cl,0,1)
     print(cl.shape)
     cl*=(1./np.pi**2/2.*prefac**2/4.*2.**2)
-    np.save('../G_matrices/clphiphi_r_over_t',[chimax1s,chimax2s,cl])
+    np.save('../G_matrices/clphiphi_r_over_t_%s'%file_ext,[chimax1s,chimax2s,cl])
 
