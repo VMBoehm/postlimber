@@ -29,8 +29,7 @@ def lensing_kernel(xi, xmax):
 #galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
 if params.bias == 'simple': bias = simple_bias
 elif params.bias == 'constant': bias = constant_bias
-kernel = dNdz_LSST(params.lsst)
-galaxy_kernel = lambda xi, xmax: kernel(xi)*bias(xi)
+galaxy_kernel = lambda xi, xmax: gal_clus(dNdz_LSST, bias, params.lsst)(xi)
 
 outpath = '../../output/clphideltacmb/'
 ofolder = '../../output/cm_clmesh/'
@@ -109,7 +108,7 @@ clphidel = np.zeros((ell_.size, t_.size, t_.size))
 ##    np.savetxt(outpath + '/%d.txt'%index, tosave, fmt='%0.4e', header='ell, chi2')
 ##
 ##
-##    print('Time taken for index %d in rank = '%(index, rank), time()-begin)
+##    print('Time taken for index %d in rank %d= '%(index, rank), time()-begin)
 ##
 
 

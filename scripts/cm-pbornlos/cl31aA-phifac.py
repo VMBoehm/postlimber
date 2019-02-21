@@ -97,6 +97,8 @@ for il in indexsplit[rank]:
     cl31aA[:, il] = Cl
 
 
+cl31aA *= 0.5 #prefactor in front of the equation
+
 result = comm.gather(cl31aA, root=0)
 
 if rank ==0:

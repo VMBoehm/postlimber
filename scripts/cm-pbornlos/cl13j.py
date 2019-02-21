@@ -23,6 +23,7 @@ print(wsize, rank)
 
 #Kernels
 clpdelmesh = np.load('../../G_matrices/clphidelta.npy')
+clpdelmesh *= -1 #missed this factor in clphidelta file, from \psi -> \phi
 clppmesh = np.load('../../G_matrices/clphiphi_parallel.npy')
 chis = np.loadtxt('../../output/chis.txt')
 
@@ -69,4 +70,5 @@ if rank == 0:
 
     cl13j *= chi_cmb
 
+    cl13j *= -0.5 #Prefactor in front of the equation
     np.save(ofolder+'/cl13j', cl13j)
