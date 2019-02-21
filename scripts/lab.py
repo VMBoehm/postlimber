@@ -64,7 +64,7 @@ def gal_kernel(z_kernel,ximax=5):
 
 
 # 2) prospective LSST kernels
-def dNdz_LSST(bin_num,dn_filename = '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
+def dNdz_LSST(bin_num,dn_filename = package_path + '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
     if bin_num is "all":
         zbin, nbin = np.load(dn_filename+'tot_extrapolated.npy',encoding='latin1')
         norm                = np.trapz(nbin,zbin)
@@ -105,7 +105,7 @@ def gal_clus(dNdz,b,bin_num):
     p_z=dNdz(bin_num)
     def kernel(x):
         z = z_chi(x)
-        return b(z)*p_z(z)*dz_dchi(x)
+        return b(x)*p_z(z)*dz_dchi(x)
 
     return kernel
 
@@ -113,7 +113,7 @@ def simple_bias(x):
     z = z_chi(x)
     return (1.+z)
 
-def constant_bias(z,b=1.):
+def constant_bias(x,b=1.):
     return b
 
 
