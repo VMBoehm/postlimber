@@ -100,6 +100,8 @@ for il in indexsplit[rank]:
     cl13a[:, il] = Cl
 
 
+cl13a  *= 0.5 #prefactor in front of the equation
+
 result = comm.gather(cl13a, root=0)
 
 if rank ==0:

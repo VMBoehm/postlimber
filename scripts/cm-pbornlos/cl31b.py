@@ -25,6 +25,7 @@ print(wsize, rank)
 #Kernels
 #clpdelmesh = np.load('../G_matrices/clphidelta_parallel.npy')
 clpdelmesh = np.load('../../output/cm_clmesh/clphideltacmb%s.npy'%params.filext)
+clpdelmesh *= -1 #Missed -1 in clphidelta that comes from \psi->\phi                                                                       
 chis = np.loadtxt('../../output/chis.txt')
 
 

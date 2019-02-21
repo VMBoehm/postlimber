@@ -24,7 +24,9 @@ print(wsize, rank)
 
 #Kernels
 clpdelmesh = np.load('../../G_matrices/clphidelta.npy')
+clpdelmesh *= -1 #Missed -1 in clphidelta that comes from \psi->\phi 
 clppsimesh = np.load('../../G_matrices/clphipsi.npy')
+clppsimesh *= -1 #Missed -1 in clphipsi that comes from \psi->\phi                                                                      
 clpsipmesh = np.swapaxes(clppsimesh, 1, 2)
 chis = np.loadtxt('../../output/chis.txt')
 
