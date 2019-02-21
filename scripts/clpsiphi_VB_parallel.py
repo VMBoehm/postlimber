@@ -21,11 +21,12 @@ params = pickle.load(open(paramfile,'rb'))
 
 chimax = params['chimax']
 chi_source = params['chisource']
+file_ext = params['ext']
 
 def lensing_kernel(xi, xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi) * (1.+z_chi(xi))
 
-r2d, t2d = np.meshgrid(t_[0:50],t_)
+r2d, t2d = np.meshgrid(t_,t_)
 
 trs      = (r2d*t2d).flatten()
 

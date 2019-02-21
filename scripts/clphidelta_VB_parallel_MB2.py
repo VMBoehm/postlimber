@@ -84,7 +84,7 @@ if rank ==0:
     chimaxs = np.reshape(chimaxs,(r2d.shape[0],r2d.shape[1]))
     print(chimaxs.shape)
     np.save('../G_matrices/clphidelta_parallel_MB2_%s.npy'%file_ext,cl)
-    np.save('../G_matrices/clphidelta_parallel_MB2_chimaxs.npy'%file_ext,chimaxs)
+    np.save('../G_matrices/clphidelta_parallel_MB2_chimaxs_%s.npy'%file_ext,chimaxs)
 
 
 
