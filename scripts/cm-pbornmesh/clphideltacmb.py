@@ -29,7 +29,7 @@ def lensing_kernel(xi, xmax):
 #galaxy_kernel = lambda xi, xmax : lsst_kernel_cb(xi)
 if params.bias == 'simple': bias = simple_bias
 elif params.bias == 'constant': bias = constant_bias
-galaxy_kernel = lambda xi, xmax: gal_clus(dNdz_LSST, bias, params.lsst)(xi)
+galaxy_kernel = lambda xi: gal_clus(dNdz_LSST, bias, params.lsst)(xi)
 
 outpath = '../../output/clphideltacmb/'
 ofolder = '../../output/cm_clmesh/'
@@ -67,49 +67,49 @@ prefindex = 1
 I_ltrc = In_ltrc[nushift]
 
 kernel1 = lensing_kernel
-kernel2 = lsst_kernel_cb 
+kernel2 = galaxy_kernel
 #chi2max = chi_cmb
 
 clphidel = np.zeros((ell_.size, t_.size, t_.size))
-##
-##for index in indexsplit[rank]:
-##    print('Rank %d for index '%rank, index)
-##    chi1max = chi1maxs[index]
-##    
-##    begin=time()
-##
-##    tosave = np.zeros((ell_.size, t_.size))
-##    for ichi1, chi1maxt in enumerate(t_*chi1max):
-##        if rank == 0: print(ichi1, chi1maxt)
-##
-##
-##        chi1fac0 = (kernel1(r2d*chi1maxt, chi1maxt) * D_chi(r2d*chi1maxt))
-##        chi1fac0 = chi1fac0 * (r2d*chi1maxt)**(1-(nushift + nu_n_.reshape(1, 1, -1)))
-##
-##        chi2fac00 = (kernel2(t2d*r2d*chi1maxt) * D_chi(r2d*t2d*chi1maxt))
-##        chi2fac01 = (kernel2(1./t2d*r2d*chi1maxt) * D_chi(r2d/t2d*chi1maxt))
-##        chi2fac01 = chi2fac01 * t2d**((nushift + nu_n_).reshape(1, 1, -1)-2)
-##        chi2fac0  = chi2fac00 + chi2fac01
-##
-##
-##        chifacs = w11*w12*chi1fac0* chi2fac0
-##
-##        result=np.zeros_like(ell_)
-##        for ii  in range(ell_.size):        
-##            result[ii] = (np.sum(chifacs*I_ltrc[ii]))
-##
-##        Cl = 2 * chi1maxt * result *1./np.pi**2/2.* prefac**prefindex / 4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
-##
-##        #np.savetxt(outpath + '/%d-%d.txt'%(index, ichi1), Cl)
-##        tosave[:, ichi1] = Cl
-##        clphidel[:, index, ichi1] = Cl
-##
-##
-##    np.savetxt(outpath + '/%d.txt'%index, tosave, fmt='%0.4e', header='ell, chi2')
-##
-##
-##    print('Time taken for index %d in rank %d= '%(index, rank), time()-begin)
-##
+
+for index in indexsplit[rank]:
+    print('Rank %d for index '%rank, index)
+    chi1max = chi1maxs[index]
+    
+    begin=time()
+
+    tosave = np.zeros((ell_.size, t_.size))
+    for ichi1, chi1maxt in enumerate(t_*chi1max):
+        if rank == 0: print(ichi1, chi1maxt)
+
+
+        chi1fac0 = (kernel1(r2d*chi1maxt, chi1maxt) * D_chi(r2d*chi1maxt))
+        chi1fac0 = chi1fac0 * (r2d*chi1maxt)**(1-(nushift + nu_n_.reshape(1, 1, -1)))
+
+        chi2fac00 = (kernel2(t2d*r2d*chi1maxt) * D_chi(r2d*t2d*chi1maxt))
+        chi2fac01 = (kernel2(1./t2d*r2d*chi1maxt) * D_chi(r2d/t2d*chi1maxt))
+        chi2fac01 = chi2fac01 * t2d**((nushift + nu_n_).reshape(1, 1, -1)-2)
+        chi2fac0  = chi2fac00 + chi2fac01
+
+
+        chifacs = w11*w12*chi1fac0* chi2fac0
+
+        result=np.zeros_like(ell_)
+        for ii  in range(ell_.size):        
+            result[ii] = (np.sum(chifacs*I_ltrc[ii]))
+
+        Cl = 2 * chi1maxt * result *1./np.pi**2/2.* prefac**prefindex / 4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
+
+        #np.savetxt(outpath + '/%d-%d.txt'%(index, ichi1), Cl)
+        tosave[:, ichi1] = Cl
+        clphidel[:, index, ichi1] = Cl
+
+
+    np.savetxt(outpath + '/%d.txt'%index, tosave, fmt='%0.4e', header='ell, chi2')
+
+
+    print('Time taken for index %d in rank %d= '%(index, rank), time()-begin)
+
 
 
 comm.barrier()
