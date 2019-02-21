@@ -64,7 +64,7 @@ def gal_kernel(z_kernel,ximax=5):
 
 
 # 2) prospective LSST kernels
-def dNdz_LSST(bin_num,dn_filename = '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
+def dNdz_LSST(bin_num,dn_filename = package_path + '../LSSTdndzs/dndz_LSST_i27_SN5_3y'):
     if bin_num is "all":
         zbin, nbin = np.load(dn_filename+'tot_extrapolated.npy',encoding='latin1')
         norm                = np.trapz(nbin,zbin)
