@@ -23,6 +23,14 @@ import Constants as const
 from classy import Class
 import pickle
 
+EmasCosmology=[{'name':'OurPostBornPaper'},
+{"A_s": 2.10732e-09,
+"h": 0.677,
+"k_pivot": 0.05,
+"n_s": 0.96824,
+"omega_b": 0.02247,
+"omega_cdm": 0.11923
+}]
 
 """ Planck 2013 Cosmological parameters from CMB and CMB temperature lensing, no neutrinos """
 Planck2013_TempLensCombined=[{

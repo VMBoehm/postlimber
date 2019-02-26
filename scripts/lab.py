@@ -64,7 +64,7 @@ def gal_kernel(z_kernel,ximax=5):
 
 
 # 2) prospective LSST kernels
-def dNdz_LSST(bin_num,dn_filename = package_path + '../LSSTdndzs/dndz_LSST_i27_SN5_3y', verbose=False):
+def dNdz_LSST(bin_num,dn_filename = package_path + '../LSSTdndzs/dndz_LSST_i27_SN5_3y', return_norm=False, verbose=False):
     if bin_num is "all":
         zbin, nbin = np.load(dn_filename+'tot_extrapolated.npy',encoding='latin1')
         norm                = np.trapz(nbin,zbin)
@@ -77,7 +77,10 @@ def dNdz_LSST(bin_num,dn_filename = package_path + '../LSSTdndzs/dndz_LSST_i27_S
         norm                = np.trapz(nbin,zbin)
     dndz                = interp1d(zbin, nbin/norm, kind='linear',bounds_error=False,fill_value=0.)
     if verbose: print('using z-bin', mbin, 'norm', norm)
-    return dndz
+    if return_norm:
+        return norm
+    else:
+        return dndz
 
 #you want to adapt chimin and chimax to actual p(z)
 def gal_lens(p_z,chimin=1e-2,chimax=chi_cmb):

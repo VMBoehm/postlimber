@@ -1,5 +1,5 @@
 #!/bin/bash
-paramfile=../settings/params_lsst0_cmblens.pkl
+paramfile=../settings/params_lsst1_deltalens_z20.pkl
 #srun -n 100 python -u clphiphi_VB_parallel_split.py $paramfile
 #srun -n 100 python -u clphiphi_VB_parallel_split2.py $paramfile
 srun -n 100 python -u clphiphi_VB_parallel.py $paramfile
