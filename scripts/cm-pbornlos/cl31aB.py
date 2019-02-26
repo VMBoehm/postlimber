@@ -74,7 +74,7 @@ for il in indexsplit[rank]:
     fac2 = np.diag(clppsimesh[il]).reshape(-1, 1)
     matrix = w11*w12*fac2*allfacs
     Cl = matrix.sum(axis=(1, 2)) / 4
-    cl31ab[:, il] = Cl
+    cl31ab[:, il] = Cl #clpsiphi (l) is the second index here
 
 cl31ab *= chi_cmb**2
 

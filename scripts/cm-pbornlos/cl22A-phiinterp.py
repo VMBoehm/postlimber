@@ -104,7 +104,7 @@ for il in indexsplit[rank]:
         result[ii] = np.sum(chifacs*I_ltrc[ii])
 
     Cl = chi1max * result *1./np.pi**2/2.* prefac**prefindex / 4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
-    cl22[:, il] = Cl
+    cl22[:, il] = Cl #clphiphi (L-l) is the second index
 
 
 result = comm.gather(cl22, root=0)

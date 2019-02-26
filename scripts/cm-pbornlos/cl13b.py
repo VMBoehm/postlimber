@@ -85,7 +85,7 @@ for il in indexsplit[rank]:
     fac2 = clphidelmesh[il]
     matrix = w11*w12*fac2*allfacs
     Cl = matrix.sum(axis=(1, 2)) / 4
-    cl13[:, il] = Cl
+    cl13[:, il] = Cl #clphidel is the second index i.e. l is second, L is first index
 
 
 cl13 *= chi_cmb

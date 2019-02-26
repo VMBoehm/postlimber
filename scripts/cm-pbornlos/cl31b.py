@@ -100,8 +100,10 @@ for il in indexsplit[rank]:
         result[ii] = np.sum(chifacs*I_ltrc[ii])
 
     Cl = chi1max * result *1./np.pi**2/2.* prefac**prefindex / 4 ###1/pi**2/2 from FFTlog, 4 from Gauss Quad
-    cl31[:, il] = Cl
+    cl31[:, il] = Cl #phidel is the second index, but we save with transpose so L is the first index in saved file
 
+
+cl31 *= 2 #prefactor in front of the equation
 
 result = comm.gather(cl31, root=0)
 

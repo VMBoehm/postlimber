@@ -66,7 +66,7 @@ if rank == 0:
         matrix = w1d*fac*kernel*clppfac
         print(matrix.shape)
         Cl = matrix.sum(axis=(1, 2)) / 2
-        cl13j[:, il] = Cl
+        cl13j[:, il] = Cl     #\phidel (l) is the second index, \phiphi (L) is the first index
 
     cl13j *= chi_cmb
 

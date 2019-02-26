@@ -97,7 +97,7 @@ for il in indexsplit[rank]:
         result[ii] = np.sum(allfacs*I_ltrc[ii])
 
     Cl = chi1max * result *1./np.pi**2/2.* prefac**prefindex / 4 #1/pi**2/2 from FFTlog, 4 from Gauss Quad
-    cl13a[:, il] = Cl
+    cl13a[:, il] = Cl #clphiphi (l) is the second index
 
 
 cl13a  *= 0.5 #prefactor in front of the equation
