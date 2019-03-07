@@ -4,7 +4,7 @@ p1
 F1088.6464513003543
 sS's'
 p2
-F0.2
+F0.6
 sS'chi0'
 p3
 cnumpy.core.multiarray
