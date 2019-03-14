@@ -40,7 +40,7 @@ w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 n=0
 
-file_ext = params['ext']
+file_ext = params['ext2']
 chimax = params['chimax']
 
 # fixing r

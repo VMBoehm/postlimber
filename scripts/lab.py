@@ -99,13 +99,16 @@ def gal_lens(p_z,chimin=1e-2,chimax=chi_cmb):
 
     return kernel
 
-def gal_clus(dNdz,b,bin_num):
+def gal_clus(dNdz,b,bin_num=None):
     """
     dNdz: function returning function dndz for gicen bin number 
     b: function returning bias as function of z 
     bin_num: bin_number (either 'all' or 0-5)
     """
-    p_z=dNdz(bin_num)
+    try:
+        p_z=dNdz(bin_num)
+    except:
+        p_z=dNdz
     def kernel(x):
         z = z_chi(x)
         return b(x)*p_z(z)*dz_dchi(x)

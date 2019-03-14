@@ -40,7 +40,7 @@ r2d, t2d = np.expand_dims(r2d, 2), np.expand_dims(t2d, 2)
 w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 n=0
-file_ext = params['ext']
+file_ext = params['ext2']
 chimax = params['chimax']
 
 for jj, chi1_max in enumerate((t_*chimax)[jjs]):

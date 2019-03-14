@@ -20,7 +20,7 @@ paramfile = sys.argv[1]
 params = pickle.load(open(paramfile,'rb'))
 
 
-file_ext = params['ext']
+file_ext = params['ext2']
 chimax = params['chimax']
 
 
