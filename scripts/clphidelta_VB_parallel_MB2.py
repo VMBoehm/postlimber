@@ -40,7 +40,7 @@ w11, w12 = np.meshgrid(w1,w1)
 I2_ltc=np.squeeze(I2_ltrc)
 # chimax and kernels
 chimax   = params['chimax']
-file_ext = params['ext']
+file_ext2 = params['ext2']
 
 n = 2
 
@@ -83,8 +83,8 @@ if rank ==0:
     print(cl.shape)
     chimaxs = np.reshape(chimaxs,(r2d.shape[0],r2d.shape[1]))
     print(chimaxs.shape)
-    np.save('../G_matrices/clphidelta_parallel_MB2_%s.npy'%file_ext,cl)
-    np.save('../G_matrices/clphidelta_parallel_MB2_chimaxs_%s.npy'%file_ext,chimaxs)
+    np.save('../G_matrices/clphidelta_parallel_MB2_%s.npy'%file_ext2,cl)
+    np.save('../G_matrices/clphidelta_parallel_MB2_chimaxs_%s.npy'%file_ext2,chimaxs)
 
 
 

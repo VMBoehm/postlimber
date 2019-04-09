@@ -23,17 +23,27 @@ params = pickle.load(open(paramfile,'rb'))
 def lensing_kernel(xi,xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi)*(1.+z_chi(xi))
 
+if params['bias'] == 'simple':
+    bias_func = simple_bias
+elif params['bias'] =='constant':
+    bias_func = constant_bias
+else:
+    print('no valid bias function selected')
+
+
+
 if params['LSST']:
     if params['bin_num'] == 'all':
         def galax_kernel(x):
-            return lsst_kernel_cb(x)*simple_bias(x)
+            return lsst_kernel_cb(x)*bias_func(x)
     else:
         def galax_kernel(x):
-            return lsst_kernel_cbn[params['bin_num']](x)*simple_bias(x)
+            return lsst_kernel_cbn[params['bin_num']](x)*bias_func(x)
 else:
-    kernel = Gauss_chi(params['chi0'],params['sigma_chi'])
+    kernel = gal_clus(Gauss_redshift(sigma_z=params['sigma_z'],z0=params['z0']), bias_func)
     def galax_kernel(x):
-        return kernel(x)*simple_bias(x)
+        return kernel(x)
+
 
 chimax   = params['chimax']
 file_ext = params['ext']

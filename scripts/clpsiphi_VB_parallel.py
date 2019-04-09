@@ -21,7 +21,7 @@ params = pickle.load(open(paramfile,'rb'))
 
 chimax = params['chimax']
 chi_source = params['chisource']
-file_ext = params['ext']
+file_ext = params['ext2']
 
 def lensing_kernel(xi, xmax):
     return (xmax - xi)/(xmax*xi) * (xmax > xi) * (1.+z_chi(xi))
@@ -84,7 +84,7 @@ if rank ==0:
     chis = np.reshape(chis,(r2d.shape[0],r2d.shape[1]))
     print(chis.shape)
     np.save('../G_matrices/clpsiphi_parallel_MB2_%s.npy'%file_ext,cl)
-    np.save('../G_matrices/clphidelta_parallel_MB2_chis_%s.npy'%file_ext,chis)
+    np.save('../G_matrices/clpsiphi_parallel_MB2_chis_%s.npy'%file_ext,chis)
 
 #factor 2 for every phi = -2 int W psi
 #factor of 1/2 for every gaussian quadrature
