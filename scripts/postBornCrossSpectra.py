@@ -77,7 +77,7 @@ class PostBorn_Bispec():
         dchis   = (chis[2:]-chis[:-2])/2.
         chis    = chis[1:-1]
         zs      = zs[1:-1]
-        win     = self.first_kernel(chis, zs)*self.second_kernel(chis,zs)/chis**2
+        win     = self.first_kernel(chis, zs)*self.second_kernel(chis)/chis**2
         cl      = np.zeros(self.ls.shape)
         w       = np.ones(chis.shape)
         cchi    = cl_chi_chistar(chis,self.ls, grid=True)
@@ -184,7 +184,7 @@ class PostBorn_Bispec():
         dchis   = (chis[2:]-chis[:-2])/2.
         chis    = chis[1:-1]
         zs      = zs[1:-1]
-        win     = self.first_kernel(chis,zs,chimax)*self.second_kernel(chis,zs,chimax2)/chis**2
+        win     = self.first_kernel(chis,zs,chimax)*self.second_kernel(chis)/chis**2
         cl      = np.zeros(self.ls.shape)
         w       = np.ones(chis.shape)
 
