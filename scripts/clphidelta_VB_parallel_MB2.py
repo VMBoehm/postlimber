@@ -66,7 +66,7 @@ for jj_, jj in enumerate(jjs):
         result[ii] = np.real(np.sum(chifacs*I2_ltc[ii]))
     
     r_test[jj_] = r
-    Cl[jj_] = result*1./np.pi**2/2.*prefac/2.*2
+    Cl[jj_] = -result*1./np.pi**2/2.*prefac/2.*2
     chimaxs[jj_] = chimax_
 
 result  = comm.gather(Cl, root=0)
