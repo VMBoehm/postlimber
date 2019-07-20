@@ -5,6 +5,13 @@ from scipy.interpolate import interp1d
 
 from kernelsnew import *
 
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+
+
 package_path = os.path.dirname(os.path.abspath(__file__))+'/'
 dpath = package_path + '../PostBornEma/'
 
@@ -26,7 +33,6 @@ Omega_b   = omega_b/h**2
 Omega_cdm = omega_cdm/h**2
 Omega_m   = Omega_b+Omega_cdm
 prefac = 1.5*Omega_m*(100.)**2/c**2 #without h
-
 
 #Setup interpolating functions
 class_z               = cosmo_b['z'][::-1]
@@ -65,7 +71,9 @@ def gal_kernel(z_kernel,ximax=5):
 
 # 2) prospective LSST kernels
 def dNdz_LSST(bin_num,dn_filename = package_path + '../LSSTdndzs/dndz_LSST_i27_SN5_3y', return_norm=False, verbose=False):
-    if bin_num is "all":
+    if rank ==0:
+        print('3, ', bin_num, bin_num=='all')
+    if bin_num=='all':
         zbin, nbin = np.load(dn_filename+'tot_extrapolated.npy',encoding='latin1')
         norm                = np.trapz(nbin,zbin)
         mbin                = 'None'
@@ -99,16 +107,19 @@ def gal_lens(p_z,chimin=1e-2,chimax=chi_cmb):
 
     return kernel
 
-def gal_clus(dNdz,b,bin_num=None):
+def gal_clus(dNdz,b,bin_num=None,LSST=False):
     """
     dNdz: function returning function dndz for gicen bin number 
     b: function returning bias as function of z 
     bin_num: bin_number (either 'all' or 0-5)
     """
-    try:
-        p_z=dNdz(bin_num)
-    except:
+    if LSST:
+        if rank==0:
+            print('2, ', bin_num)
+        p_z=dNdz_LSST(bin_num)
+    else:
         p_z=dNdz
+
     def kernel(x):
         z = z_chi(x)
         return b(x)*p_z(z)*dz_dchi(x)

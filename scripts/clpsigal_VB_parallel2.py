@@ -39,8 +39,7 @@ else:
     print('no valid bias function selected')
 
 if LSST:
-    kernel1 = gal_clus(dNdz_LSST, bias_func, bin_num1)
-    kernel2 = gal_clus(dNdz_LSST, bias_func, bin_num2)
+    kernel2 = gal_clus(dNdz=None, b=bias_func, bin_num=bin_num2, LSST=LSST)
 else:
     kernel1 = gal_clus(Gauss_redshift(sigma_z=sigma_z_1,z0=z0_1), bias_func)
     kernel2 = gal_clus(Gauss_redshift(sigma_z=sigma_z_2,z0=z0_2), bias_func)

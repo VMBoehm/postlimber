@@ -51,14 +51,14 @@ w1d = np.expand_dims(w1,1)
 for jj_, jj in enumerate(jjs):
     r = rs[jj]
     t = ts[jj]
-    chimax_  = r*t*chimax
-    chi      = r*chimax
-    chi1fac0 = D_chi(chi)
-    chi1fac0 = chi1fac0*(chi)**(1.-(n+nu_n_.reshape(1, -1)))
-    chi2fac00= D_chi(chi*t1d)*lensing_kernel(chi*t1d,chimax_)
-    #chi2fac01 = D_chi(chi/t1d)*lensing_kernel(chi/t1d,chimax)
-    #chi2fac01 = chi2fac01 * t1d**((n+nu_n_).reshape(1, -1)-2)
-    chi2fac0  = chi2fac00 #+ chi2fac01
+    chimax_   = r*t*chimax
+    chi       = r*chimax
+    chi1fac0  = D_chi(chi)
+    chi1fac0  = chi1fac0*(chi)**(1.-(n+nu_n_.reshape(1, -1)))
+    chi2fac00 = D_chi(chi*t1d)*lensing_kernel(chi*t1d,chimax_)
+    chi2fac01 = D_chi(chi/t1d)*lensing_kernel(chi/t1d,chimax_)
+    chi2fac01 = chi2fac01 * t1d**((n+nu_n_).reshape(1, -1)-2)
+    chi2fac0  = chi2fac00 + chi2fac01
 
     chifacs   = w1d*chi1fac0* chi2fac0
 
@@ -67,7 +67,7 @@ for jj_, jj in enumerate(jjs):
         result[ii] = np.real(np.sum(chifacs*I2_ltc[ii]))
     
     r_test[jj_] = r
-    Cl[jj_] = result*1./np.pi**2/2.*prefac/2.*2
+    Cl[jj_] = result*1./np.pi**2/2.*prefac/2.*-2
     chimaxs[jj_] = chimax_
 
 result  = comm.gather(Cl, root=0)
@@ -84,7 +84,7 @@ if rank ==0:
     print(cl.shape)
     chimaxs = np.reshape(chimaxs,(r2d.shape[0],r2d.shape[1]))
     print(chimaxs.shape)
-    np.save('../G_matrices/clphidelta_paralleli_M31b_%s.npy'%file_ext,[cl,chimaxs])
+    np.save('../G_matrices/clphidelta_parallel_M31b_auto_%s.npy'%file_ext,[cl,chimaxs])
 
 
 

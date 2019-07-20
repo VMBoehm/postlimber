@@ -39,8 +39,10 @@ else:
     print('no valid bias function selected')
 
 if LSST:
-    kernel1 = gal_clus(dNdz_LSST, bias_func, bin_num1)
-    kernel2 = gal_clus(dNdz_LSST, bias_func, bin_num2)
+    if rank==0:
+        print('1, ', bin_num1)
+    kernel1 = gal_clus(dNdz=None, b=bias_func, bin_num=bin_num1, LSST=LSST)
+    #kernel2 = gal_clus(dNdz=dNdz_LSST, b=bias_func, bin_num=bin_num2)
 else:
     kernel1 = gal_clus(Gauss_redshift(sigma_z=sigma_z_1,z0=z0_1), bias_func)
     kernel2 = gal_clus(Gauss_redshift(sigma_z=sigma_z_2,z0=z0_2), bias_func)
@@ -56,7 +58,7 @@ max_num  = min((rank+1)*junksize,len(trs))
 if rank == size-1:
     max_num = len(trs)
 jjs      = np.arange(rank*junksize, max_num,dtype=np.int)
-print(junksize,max_num)
+#print(junksize,max_num)
 
 Cl       = np.zeros((len(jjs),len(ell_)))
 Chis     = np.zeros(len(jjs))

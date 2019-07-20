@@ -1,6 +1,6 @@
 #!/bin/bash
 module load python/3.6-anaconda-4.4
-paramfile=../settings/params_lsstall_cmblens_simple_bias_zmax10886.pkl
+paramfile=../settings/params_auto_lsst_all_allsimple_biaszmax50.pkl
 ### these only need to be run for new chimax
 srun -n 100 python -u clphiphi_VB_parallel_split.py $paramfile
 srun -n 100 python -u clphiphi_VB_parallel_split2.py $paramfile
