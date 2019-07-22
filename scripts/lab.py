@@ -135,5 +135,5 @@ def constant_bias(x,b=1.):
 
 
 
-lsst_kernel_cb = gal_clus(dNdz_LSST, constant_bias, 'all')
-lsst_kernel_cbn = [gal_clus(dNdz_LSST, constant_bias, i) for i in range(5)]
+lsst_kernel_cb = gal_clus(dNdz=None, b=constant_bias, bin_num='all', LSST=True)
+lsst_kernel_cbn = [gal_clus(dNdz=None, b=constant_bias, bin_num=i, LSST=True) for i in range(5)]
