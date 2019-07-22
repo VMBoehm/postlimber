@@ -44,14 +44,13 @@ w11, w12 = np.expand_dims(w11, 2), np.expand_dims(w12, 2)
 
 n=0
 
-
 for jj, chi1_max in enumerate((t_*chimax)[jjs]):
 
-    chi1fac0 = (lensing_kernel(r2d*chi1_max, chi1_max)*D_chi(r2d*chi1_max))
-    chi1fac0 = chi1fac0 *(r2d*chi1_max)**(1-nu_n_.reshape(1, 1, -1))
+    chi1fac0 = (lensing_kernel(r2d*chisource, chisource)*D_chi(r2d*chisource))
+    chi1fac0 = chi1fac0 *(r2d*chisource)**(1-nu_n_.reshape(1, 1, -1))
 
-    chi2fac00 = (lensing_kernel(t2d*r2d*chi1_max, chisource)*D_chi(r2d*t2d*chi1_max))
-    chi2fac01 = (lensing_kernel(1./t2d*r2d*chi1_max, chisource)*D_chi(r2d*1./t2d*chi1_max))
+    chi2fac00 = (lensing_kernel(t2d*r2d*chisource, chi1_max)*D_chi(r2d*t2d*chisource))
+    chi2fac01 = (lensing_kernel(1./t2d*r2d*chisource, chi1_max)*D_chi(r2d*1./t2d*chisource))
     chi2fac01 = chi2fac01 * t2d**(n+nu_n_.reshape(1, 1, -1)-2)
     chi2fac0  = chi2fac00 + chi2fac01
 
